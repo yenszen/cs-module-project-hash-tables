@@ -1,11 +1,50 @@
-class HashTableEntry:
-    """
-    Linked List hash table key/value pair
-    """
+class Node:
     def __init__(self, key, value):
         self.key = key
         self.value = value
         self.next = None
+
+    def __repr__(self):
+        return f"key: {str(self.key)}, value: {str(self.value)}"
+
+class HashTableEntry:
+    """
+    Linked List hash table key/value pair
+    """
+    # def __init__(self, key, value):
+    #     self.key = key
+    #     self.value = value
+    #     self.next = None
+
+    def __init__(self):
+        self.head = None
+
+    def __repr__(self):
+        current_str = ""
+        current = self.head
+        while current is not None:
+            current_str += f"{str(current.value)} -> "
+            current = current.next
+        return current_str
+
+    def add_to_head(self, node):
+        node.next = self.head
+        self.head = node
+
+    def add_to_head_or_overwrite(self, node):
+        existing_node = self.find(node.key)
+        if existing_node is not None:
+            existing_node.value = node.value
+        else:
+            self.add_to_head(node)
+
+    def find(self, key):
+        current = self.head
+        while current is not None:
+            if current.key == key:
+                return current
+            current = current.next
+        return None
 
 
 # Hash table can't have fewer than this many slots
@@ -23,7 +62,7 @@ class HashTable:
     def __init__(self, capacity):
         # Your code here
         self.capacity = capacity
-        self._table = [None] * capacity
+        self.table = [None] * capacity
 
 
     def get_num_slots(self):
@@ -37,7 +76,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        return len(self._table)
+        return len(self.table)
 
 
     def get_load_factor(self):
@@ -82,6 +121,7 @@ class HashTable:
         #return self.fnv1(key) % self.capacity
         return self.djb2(key) % self.capacity
 
+
     def put(self, key, value):
         """
         Store the value with the given key.
@@ -91,7 +131,9 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        self._table[self.hash_index(key)] = value
+        new_node = Node(key, value)
+        self.table[self.hash_index(key)] = HashTableEntry()
+        self.table[self.hash_index(key)].add_to_head_or_overwrite(new_node)
 
 
     def delete(self, key):
@@ -103,7 +145,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        self._table[self.hash_index(key)] = None
+        self.table[self.hash_index(key)] = None
 
 
     def get(self, key):
@@ -115,7 +157,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        return self._table[self.hash_index(key)]
+        if self.table(self.hash_index(key)) is not None:
+            return self.table(self.hash_index(key)).find(key)
+        else:
+            return None
 
 
     def resize(self, new_capacity):
@@ -133,34 +178,39 @@ class HashTable:
 if __name__ == "__main__":
     ht = HashTable(8)
 
-    ht.put("line_1", "'Twas brillig, and the slithy toves")
-    ht.put("line_2", "Did gyre and gimble in the wabe:")
-    ht.put("line_3", "All mimsy were the borogoves,")
-    ht.put("line_4", "And the mome raths outgrabe.")
-    ht.put("line_5", '"Beware the Jabberwock, my son!')
-    ht.put("line_6", "The jaws that bite, the claws that catch!")
-    ht.put("line_7", "Beware the Jubjub bird, and shun")
-    ht.put("line_8", 'The frumious Bandersnatch!"')
-    ht.put("line_9", "He took his vorpal sword in hand;")
-    ht.put("line_10", "Long time the manxome foe he sought--")
-    ht.put("line_11", "So rested he by the Tumtum tree")
-    ht.put("line_12", "And stood awhile in thought.")
+    ht.put("abc", "second value")
+    ht.put("cba", "third value")
 
-    print("")
+    print(ht.table)
+
+    # ht.put("line_1", "'Twas brillig, and the slithy toves")
+    # ht.put("line_2", "Did gyre and gimble in the wabe:")
+    # ht.put("line_3", "All mimsy were the borogoves,")
+    # ht.put("line_4", "And the mome raths outgrabe.")
+    # ht.put("line_5", '"Beware the Jabberwock, my son!')
+    # ht.put("line_6", "The jaws that bite, the claws that catch!")
+    # ht.put("line_7", "Beware the Jubjub bird, and shun")
+    # ht.put("line_8", 'The frumious Bandersnatch!"')
+    # ht.put("line_9", "He took his vorpal sword in hand;")
+    # ht.put("line_10", "Long time the manxome foe he sought--")
+    # ht.put("line_11", "So rested he by the Tumtum tree")
+    # ht.put("line_12", "And stood awhile in thought.")
+
+    # print("")
 
     # Test storing beyond capacity
-    for i in range(1, 13):
-        print(ht.get(f"line_{i}"))
+    # for i in range(1, 13):
+    #     print(ht.get(f"line_{i}"))
 
     # Test resizing
-    old_capacity = ht.get_num_slots()
-    ht.resize(ht.capacity * 2)
-    new_capacity = ht.get_num_slots()
+    # old_capacity = ht.get_num_slots()
+    # ht.resize(ht.capacity * 2)
+    # new_capacity = ht.get_num_slots()
 
-    print(f"\nResized from {old_capacity} to {new_capacity}.\n")
+    # print(f"\nResized from {old_capacity} to {new_capacity}.\n")
 
-    # Test if data intact after resizing
-    for i in range(1, 13):
-        print(ht.get(f"line_{i}"))
+    # # Test if data intact after resizing
+    # for i in range(1, 13):
+    #     print(ht.get(f"line_{i}"))
 
-    print("")
+    # print("")
