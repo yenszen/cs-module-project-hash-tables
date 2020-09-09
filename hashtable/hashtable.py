@@ -205,8 +205,18 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        pass
+        old_capacity = self.capacity
+        self.capacity = new_capacity
 
+        for i in range(old_capacity, new_capacity):
+            self.table.append(None)
+            self.table[i] = LinkedList()
+
+        for i in range(0, old_capacity):
+            current_node = self.table[i].head
+            while current_node is not None:
+                self.put(current_node.key, current_node.value)
+                current_node = current_node.next        
 
 
 if __name__ == "__main__":
