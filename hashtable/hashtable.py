@@ -103,7 +103,25 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        pass
+        count = 0
+
+        for i in range(0, len(self.table)):
+            current = self.table[i].head
+            while current is not None:
+                count += 1
+                current = current.next
+        
+        load_factor = count / self.get_num_slots()
+        
+        if load_factor > 0.7:
+            self.resize(self.capacity * 2)
+        elif load_factor < 0.2:
+            if self.capacity // 2 < 8:
+                self.resize(8)
+            else:
+                self.resize(self.capacity // 2)
+        
+        return load_factor
 
 
     def fnv1(self, key):
@@ -214,14 +232,14 @@ if __name__ == "__main__":
         print(ht.get(f"line_{i}"))
 
     # Test resizing
-    # old_capacity = ht.get_num_slots()
-    # ht.resize(ht.capacity * 2)
-    # new_capacity = ht.get_num_slots()
+    old_capacity = ht.get_num_slots()
+    ht.resize(ht.capacity * 2)
+    new_capacity = ht.get_num_slots()
 
-    # print(f"\nResized from {old_capacity} to {new_capacity}.\n")
+    print(f"\nResized from {old_capacity} to {new_capacity}.\n")
 
     # # Test if data intact after resizing
-    # for i in range(1, 13):
-    #     print(ht.get(f"line_{i}"))
+    for i in range(1, 13):
+        print(ht.get(f"line_{i}"))
 
-    # print("")
+    print("")
